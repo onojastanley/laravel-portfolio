@@ -24,17 +24,29 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            return redirect()->intended('home');
+            $request->session()->regenerate();
+                 $notification = array(
+            'message' => 'User Login Successfully',
+            'alert-type' => 'success'
+        );
+            return redirect()->intended('dashboard')->with($notification);
         }
-
-        return redirect('login')->with('error', 'Oppes! You have entered invalid credentials');
+        $notification = array(
+            'message' => 'User Login Failed',
+            'alert-type' => 'error'
+        );
+        return back()->with($notification);
     }
 
     public function logout() {
-      Auth::logout();
+        Auth::logout();
+        $notification = array(
+            'message' => 'User Logout Successfully',
+            'alert-type' => 'success'
+        );
 
-      return redirect('login');
-    }
+        return redirect('/login')->with($notification);
+      }
 
     public function home()
     {
